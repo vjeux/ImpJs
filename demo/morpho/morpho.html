@@ -1,0 +1,100 @@
+<script src="../../bin/imp.js"></script>
+<script src="../../bin/value/value.js"></script>
+<script src="../../bin/value/rgba.js"></script>
+<script src="../../bin/value/gray.js"></script>
+<script src="../../bin/value/bool.js"></script>
+<script src="../../bin/site/site.js"></script>
+<script src="../../bin/site/point.js"></script>
+<script src="../../bin/siteset/siteset.js"></script>
+<script src="../../bin/siteset/box.js"></script>
+<script src="../../bin/image/image.js"></script>
+<script src="../../bin/image/canvas.js"></script>
+<script src="../../bin/image/raw.js"></script>
+<script src="../../bin/image/morpher.js"></script>
+<script src="../../bin/algorithm/morpho.js"></script>
+<script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
+
+<style>
+canvas {
+	width: 158px;
+	height: 200px;
+}
+div {
+	display: inline-block;
+	text-align: center;
+	width: 158px;
+}
+</style>
+
+<script type="text/coffeescript">
+Imp.Image.fromUrl '../../impjs_small.png', (rgba) ->
+	win = new Imp.Box [-1, -1], [1, 1]
+
+	inputs = [
+		{
+			image: rgba,
+			convert: (image) -> image
+		},
+		{
+			image: rgba.rgba2gray(),
+			convert: (image) -> image.gray2rgba()
+		},
+		{
+			image: rgba.rgba2gray().gray2bool(0),
+			convert: (image) -> image.bool2gray().gray2rgba()
+		}
+	]
+
+	functions = [
+		{
+			name: 'Original',
+			apply: (image) -> image
+		},
+		{
+			name: 'Erosion',
+			apply: (image) -> image.erosion win
+		},
+		{
+			name: 'Dilation',
+			apply: (image) -> image.dilation win
+		},
+		{
+			name: 'Opening',
+			apply: (image) -> image.opening win
+		},
+		{
+			name: 'Closing',
+			apply: (image) -> image.closing win
+		},
+		{
+			name: 'Gradient',
+			apply: (image) -> image.gradient win
+		}
+	]
+
+	newCanvas = ->
+		canvas = document.createElement 'canvas'
+		canvas.width = 79
+		canvas.height = 100
+		document.body.appendChild(canvas)
+		canvas
+
+	newBr = ->
+		br = document.createElement 'br'
+		document.body.appendChild(br)
+
+	newCaption = (name) ->
+		div = document.createElement 'div'
+		div.innerHTML = name
+		document.body.appendChild div
+
+	for {name} in functions
+		newCaption name
+
+	for {image, convert} in inputs
+		newBr()
+		for {name, apply} in functions
+			convert(apply image).draw newCanvas()
+
+</script>
+

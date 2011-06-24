@@ -1,0 +1,53 @@
+<script src="../../bin/imp.js"></script>
+<script src="../../bin/site/site.js"></script>
+<script src="../../bin/site/node.js"></script>
+<script src="../../bin/siteset/siteset.js"></script>
+<script src="../../bin/siteset/stack.js"></script>
+<script src="../../bin/siteset/queue.js"></script>
+<script src="../../bin/siteset/graph.js"></script>
+<script src="http://jashkenas.github.com/coffee-script/extras/coffee-script.js"></script>
+
+<textarea id="textarea" style="width: 100%; height: 100%;"></textarea>
+
+<script type="text/coffeescript">
+
+textarea = document.getElementById 'textarea'
+log = (message) ->
+	textarea.value += message + '\n'
+
+graph = new Imp.Graph
+
+log '-> a ----> b'
+log '   | ^     |'
+log '   |   \\   |'
+log '   v     \\ v'
+log '   c ----> d -----> e'
+
+a = new Imp.Node 'a'
+b = new Imp.Node 'b'
+c = new Imp.Node 'c'
+d = new Imp.Node 'd'
+e = new Imp.Node 'e'
+
+graph.push a, b, c, d, e
+a.push c, b
+b.push d
+c.push d
+d.push a, e
+
+log ''
+log 'Standard'
+graph.each (s) ->
+	log s.value
+
+log ''
+log 'Breadth-first Search'
+graph.each 'bfs', (s) ->
+	log s.value
+
+log ''
+log 'Depth-first Search'
+graph.each 'dfs', (s) ->
+	log s.value
+
+</script>
